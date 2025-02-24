@@ -1,4 +1,3 @@
-
 VERSION = 1.4.0
 
 ARMCC = arm-none-eabi-gcc -D_POSIX_THREADS
@@ -21,6 +20,10 @@ lib-x86: runtimes/linux-x86/native/$(TARGET)
 lib-arm64: CC=$(ARMCC)
 lib-arm64: runtimes/linux-arm64/native/$(TARGET)
 
+lib-macos-arm64: CC=clang -arch arm64
+lib-macos-arm64: TARGET=libwebrtcvad.dylib
+lib-macos-arm64: runtimes/macos-arm64/native/$(TARGET)
+
 runtimes/linux-x64/native/$(TARGET): $(OBJECTS)
 	mkdir -p runtimes/linux-x64/native
 	$(CC) $(LDFLAGS) -o $@ $(OBJECTS)
@@ -36,6 +39,10 @@ runtimes/linux-arm64/native/$(TARGET): $(OBJECTS)
 runtimes/linux-arm/native/$(TARGET): $(OBJECTS)
 	mkdir -p runtimes/linux-arm/native
 	$(ARMCC) $(LDFLAGS) -m32 -o $@ $(OBJECTS)
+
+runtimes/macos-arm64/native/$(TARGET): $(OBJECTS)
+	mkdir -p runtimes/macos-arm64/native
+	$(CC) -dynamiclib -o $@ $(OBJECTS)
 
 clean:
 	rm -rf $(OBJECTS) $(TARGET) bin obj runtimes
